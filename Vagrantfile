@@ -2,9 +2,9 @@ $set_environment_variables = <<SCRIPT
 tee "/etc/profile.d/myvars.sh" > "/dev/null" <<EOF
 
 # AWS environment variables.
-export AWS_DEFAULT_REGION=#{ENV['AWS_DEFAULT_REGION']}
-export AWS_ACCESS_KEY_ID=#{ENV['AWS_ACCESS_KEY_ID']}
-export AWS_SECRET_ACCESS_KEY=#{ENV['AWS_SECRET_ACCESS_KEY']}
+export AWS_DEFAULT_REGION=#{ENV['GOV_AWS_DEFAULT_REGION']}
+export AWS_ACCESS_KEY_ID=#{ENV['GOV_AWS_ACCESS_KEY_ID']}
+export AWS_SECRET_ACCESS_KEY=#{ENV['GOV_AWS_SECRET_ACCESS_KEY']}
 EOF
 SCRIPT
 
