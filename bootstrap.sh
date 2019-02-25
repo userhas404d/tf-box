@@ -38,15 +38,6 @@ systemctl enable ntpd
 # set hardare clock to current system time
 hwclock  -w 
 
-# configure git
-echo "Configuring git"
-git config --system --remove-section credential 
-git config --global --remove-section credential 
-git config --global --remove-section 'credential.https://git-codecommit.us-east-1.amazonaws.com' 
-git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.helper '!aws codecommit credential-helper $@' 
-git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.UseHttpPath true 
-echo "Git configuration complete"
-
 # install terraform
 git clone https://github.com/plus3it/terraform-bootstrap.git
 chmod +x terraform-bootstrap/install.sh && ./terraform-bootstrap/install.sh
