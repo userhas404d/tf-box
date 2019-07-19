@@ -39,8 +39,9 @@ systemctl enable ntpd
 hwclock  -w 
 
 # install terraform
-git clone https://github.com/plus3it/terraform-bootstrap.git
-chmod +x terraform-bootstrap/install.sh && ./terraform-bootstrap/install.sh
+git clone https://github.com/tfutils/tfenv.git /home/vagrant/.tfenv
+/home/vagrant/.tfenv/bin/tfenv install 0.11.14
+/home/vagrant/.tfenv/bin/tfenv use 0.11.14
 
 #install terragrunt
 git clone https://github.com/userhas404d/terragrunt-bootstrap.git
@@ -67,3 +68,30 @@ pip3 install --index-url="$PYPI_URL" --upgrade pip setuptools
 pip3 install pipenv
 echo "Python install complete"
 
+# configure the bash profile
+cat <<'EOT' >> /home/vagrant/.bash_profile
+
+# Setup terminal support for UTF-8
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# update path for tfven
+export PATH="$HOME/.tfenv/bin:$PATH"
+
+# AWS environment variables.
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_ACCESS_KEY_ID="$(aws configure get default.aws_access_key_id)"
+export AWS_SECRET_ACCESS_KEY="$(aws configure get default.aws_secret_access_key)"
+
+# confirm AWS env vars exist
+[[ -z "$AWS_DEFAULT_REGION" ]] && echo "ERROR: AWS_DEFAULT_REGION not set" || echo "AWS_DEFAULT_REGION is set"
+[[ -z "$AWS_ACCESS_KEY_ID" ]] && echo "ERROR: AWS_ACCESS_KEY_ID not set" || echo "AWS_ACCESS_KEY_ID is set"
+[[ -z "$AWS_SECRET_ACCESS_KEY" ]] && echo "ERROR: AWS_SECRET_ACCESS_KEY not set" || echo "AWS_SECRET_ACCESS_KEY is set"
+
+# configure git
+git config --system --remove-section credential 
+git config --global --remove-section credential 
+git config --global --remove-section 'credential.https://git-codecommit.us-east-1.amazonaws.com' 
+git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.helper '!aws codecommit credential-helper $@' 
+git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.UseHttpPath true
+EOT
