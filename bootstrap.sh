@@ -68,6 +68,13 @@ pip3 install --index-url="$PYPI_URL" --upgrade pip setuptools
 pip3 install pipenv
 echo "Python install complete"
 
+# install go
+export GOROOT=/home/vagrant/.go
+export GOPATH=/home/vagrant/go
+curl https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
+
+"$GOROOT"/bin/go get -u github.com/justjanne/powerline-go
+
 # configure the bash profile
 cat <<'EOT' >> /home/vagrant/.bash_profile
 
@@ -77,6 +84,11 @@ export LANG=en_US.UTF-8
 
 # update path for tfven
 export PATH="$HOME/.tfenv/bin:$PATH"
+# update path for go
+export GOROOT=/home/vagrant/.go
+export PATH=$GOROOT/bin:$PATH
+export GOPATH=/home/vagrant/go
+export PATH=$GOPATH/bin:$PATH
 
 # AWS environment variables.
 export AWS_DEFAULT_REGION=us-east-1
@@ -94,4 +106,13 @@ git config --global --remove-section credential
 git config --global --remove-section 'credential.https://git-codecommit.us-east-1.amazonaws.com' 
 git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.helper '!aws codecommit credential-helper $@' 
 git config --global credential.'https://git-codecommit.us-east-1.amazonaws.com'.UseHttpPath true
+
+# configure go powerline
+function _update_ps1() {
+    PS1="$($GOPATH/bin/powerline-go -error $?)"
+}
+
+if [ "$TERM" != "linux" ] && [ -f "$GOPATH/bin/powerline-go" ]; then
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+fi
 EOT
